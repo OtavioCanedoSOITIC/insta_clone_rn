@@ -1,20 +1,53 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { AppBar, IconButton } from "@react-native-material/core";
+// import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
-export default function App() {
+import { AntDesign } from "@expo/vector-icons";
+
+function App() {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <AppBar
+        title="Instagram"
+        trailing={(props) => [
+          <IconButton
+            {...props}
+            key="1"
+            name="chat"
+            icon={<AntDesign name="hearto" size={24} color="white" />}
+          />,
+          <IconButton
+            {...props}
+            key="2"
+            name="chat"
+            icon={<AntDesign name="message1" color="white" size={24} />}
+          />,
+        ]}
+        style={{ paddingTop: insets.top }}
+      />
     </View>
   );
 }
 
+const AppProvider = () => {
+  return (
+    <SafeAreaProvider>
+      <App />
+    </SafeAreaProvider>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // backgroundColor: "#000000",
   },
 });
+
+export default AppProvider;
