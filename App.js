@@ -14,6 +14,77 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Octicons } from "@expo/vector-icons";
 
+const PostItem = ({ item }) => {
+  return (
+    <View>
+      <View style={styles.createPostContainer}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Ionicons name="person-circle" size={45} color="white" />
+          <Text style={styles.profileName}>{item.name}</Text>
+        </View>
+        <View>
+          <Ionicons name="ellipsis-vertical" size={24} color="white" />
+        </View>
+      </View>
+      <Image
+        source={{ uri: item.image }}
+        style={styles.postImage}
+        resizeMode="cover"
+      />
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: 10,
+          marginBottom: 10,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-around",
+            width: "40%",
+          }}
+        >
+          <AntDesign name="hearto" size={24} color="white" />
+          <AntDesign name="message1" size={24} color="white" />
+          <Feather name="send" size={24} color="white" />
+        </View>
+        <Feather
+          name="bookmark"
+          size={24}
+          color="white"
+          style={{ marginRight: 10 }}
+        />
+      </View>
+      <View style={{ marginBottom: 5 }}>
+        <Text style={{ color: "white", marginLeft: 10 }}>
+          {item.likes + " curtidas"}
+        </Text>
+      </View>
+      <View style={{ marginBottom: 5 }}>
+        <Text style={{ color: "white", marginLeft: 10 }} numberOfLines={5}>
+          <Text style={{ fontWeight: "bold" }}>{item.username}</Text>{" "}
+          {item.desc}
+        </Text>
+      </View>
+      <View style={{ marginBottom: 5 }}>
+        <Text style={{ color: "gray", marginLeft: 10 }} numberOfLines={5}>
+          Ver todos os comentários
+        </Text>
+      </View>
+      <View style={{ marginBottom: 5 }}>
+        <Text style={{ color: "gray", marginLeft: 10 }} numberOfLines={5}>
+          há 5 minutos • Ver tradução
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 const HomeScreen = () => {
   const people = [
     {
@@ -94,7 +165,6 @@ const HomeScreen = () => {
         data={people}
         keyExtractor={(item) => item.username}
         horizontal
-        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.storieContainer}>
             <Ionicons name="person-circle" size={65} color="white" />
@@ -102,59 +172,10 @@ const HomeScreen = () => {
           </View>
         )}
       />
-      <View style={styles.createPostContainer}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Ionicons name="person-circle" size={45} color="white" />
-          <Text style={styles.profileName}>{people[0].name}</Text>
-        </View>
-        <View>
-          <Ionicons name="ellipsis-vertical" size={24} color="white" />
-        </View>
-      </View>
-      <Image
-        source={{ uri: people[0].image }}
-        style={styles.postImage}
-        resizeMode="cover"
+      <FlatList
+        data={people}
+        renderItem={({ item }) => <PostItem item={item} />}
       />
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: 10,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-around",
-            width: "40%",
-          }}
-        >
-          <AntDesign name="hearto" size={24} color="white" />
-          <AntDesign name="message1" size={24} color="white" />
-          <Feather name="send" size={24} color="white" />
-        </View>
-        <Feather
-          name="bookmark"
-          size={24}
-          color="white"
-          style={{ marginRight: 10 }}
-        />
-      </View>
-      <View>
-        <Text style={{ color: "white", marginLeft: 10 }}>
-          {people[0].likes + " curtidas"}
-        </Text>
-      </View>
-      <View>
-        <Text style={{ color: "white", marginLeft: 10 }} numberOfLines={5}>
-          <Text style={{ fontWeight: "bold" }}>{people[0].username}</Text>{" "}
-          {people[0].desc}
-        </Text>
-      </View>
     </View>
   );
 };
@@ -327,13 +348,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     marginRight: 10,
-    marginBottom: 5,
+    marginBottom: 30,
     marginLeft: 10,
   },
   profileName: {
     color: "white",
   },
-  body: { backgroundColor: "black", flex: 1 },
+  body: {
+    backgroundColor: "black",
+    flex: 1,
+    justifyContent: "space-evenly",
+    width: "100%",
+  },
   createPostContainer: {
     flexDirection: "row",
     alignItems: "center",
