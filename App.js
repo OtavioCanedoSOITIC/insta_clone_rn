@@ -1,5 +1,12 @@
 import { AppBar, IconButton } from "@react-native-material/core";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -13,6 +20,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Octicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const PostItem = ({ item }) => {
   return (
@@ -26,11 +35,13 @@ const PostItem = ({ item }) => {
           <Ionicons name="ellipsis-vertical" size={24} color="white" />
         </View>
       </View>
-      <Image
-        source={{ uri: item.image }}
-        style={styles.postImage}
-        resizeMode="cover"
-      />
+      {item.image && (
+        <Image
+          source={{ uri: item.image }}
+          style={styles.postImage}
+          resizeMode="cover"
+        />
+      )}
       <View
         style={{
           flex: 1,
@@ -65,12 +76,14 @@ const PostItem = ({ item }) => {
           {item.likes + " curtidas"}
         </Text>
       </View>
-      <View style={{ marginBottom: 5 }}>
-        <Text style={{ color: "white", marginLeft: 10 }} numberOfLines={5}>
-          <Text style={{ fontWeight: "bold" }}>{item.username}</Text>{" "}
-          {item.desc}
-        </Text>
-      </View>
+      {item.desc && (
+        <View style={{ marginBottom: 5 }}>
+          <Text style={{ color: "white", marginLeft: 10 }} numberOfLines={5}>
+            <Text style={{ fontWeight: "bold" }}>{item.username}</Text>{" "}
+            {item.desc}
+          </Text>
+        </View>
+      )}
       <View style={{ marginBottom: 5 }}>
         <Text style={{ color: "gray", marginLeft: 10 }} numberOfLines={5}>
           Ver todos os comentários
@@ -86,97 +99,134 @@ const PostItem = ({ item }) => {
 };
 
 const HomeScreen = () => {
-  const people = [
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [people, setPeople] = useState([
     {
-      name: "John Doe",
-      desc: "Explorando o mundo! As ruas da cidade são um lugar maravilhoso, onde encontro paz e serenidade.",
-      username: "john_doe",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-      likes: 1024,
+      name: "Otavio Canedo",
+      username: "otaviocanedo",
+      likes: "100",
+      desc: "Desenvolvedor entusiasta em busca de soluções inovadoras! 💻🚀 #CodeLife",
+      image: "",
     },
     {
-      name: "Jane Smith",
-      desc: "Amo viajar! Adoro descobrir novos lugares e compartilhar minhas aventuras.",
-      username: "jane_smith",
-      image: "https://randomuser.me/api/portraits/women/1.jpg",
-      likes: 542,
+      name: "Gui Miranda",
+      username: "guimiranda",
+      likes: "110",
+      desc: "Apaixonado por programação e tecnologia. 💡🖥️ #DevLife",
+      image: "",
     },
     {
-      name: "Alice Johnson",
-      desc: "Aventuras diárias! Cada dia é uma nova oportunidade para explorar o desconhecido.",
-      username: "alice_j",
-      image: "https://randomuser.me/api/portraits/women/2.jpg",
-      likes: 789,
+      name: "Luccas Benedetti",
+      username: "luccasbenedetti",
+      likes: "120",
+      desc: "Explorando o mundo da programação com paixão e dedicação! 🌍👨‍💻",
+      image: "",
     },
     {
-      name: "Michael Brown",
-      desc: "Vida ao ar livre! A natureza é meu playground e estou sempre em busca de novas trilhas para explorar.",
-      username: "mike_brown",
-      image: "https://randomuser.me/api/portraits/men/2.jpg",
-      likes: 1236,
+      name: "Vini Charleaux",
+      username: "vinicharleaux",
+      likes: "130",
+      desc: "Amante do código e da criatividade. 🎵💻 Juntos, podemos criar coisas incríveis!",
+      image: "",
     },
     {
-      name: "Jessica Parker",
-      desc: "Amante da natureza! Encontre-me entre as árvores e montanhas, onde minha alma se sente em casa.",
-      username: "jess_nature",
-      image: "https://randomuser.me/api/portraits/women/3.jpg",
-      likes: 654,
+      name: "Hiago Martins",
+      username: "hiagomartins",
+      likes: "140",
+      desc: "Focado em aprender e evoluir a cada linha de código! 📚💻 #CodingJourney",
+      image: "",
     },
     {
-      name: "Daniel Johnson",
-      desc: "Explorador urbano! As ruas da cidade são meu campo de jogo e adoro descobrir seus segredos escondidos.",
-      username: "daniel_city",
-      image: "https://randomuser.me/api/portraits/men/3.jpg",
-      likes: 897,
+      name: "Danilo Augusto",
+      username: "daniloaugusto",
+      likes: "150",
+      desc: "Vivendo a vida com paixão pela programação! 🌟👨‍💻 #CodePassion",
+      image: "",
     },
     {
-      name: "Emily Davis",
-      desc: "Fotógrafa de viagem! Minha câmera é minha melhor amiga, capturando momentos que duram uma vida inteira.",
-      username: "emily_photo",
-      image: "https://randomuser.me/api/portraits/women/4.jpg",
-      likes: 345,
+      name: "Alexandre Ventura",
+      username: "alexandreventura",
+      likes: "160",
+      desc: "Amor pela tecnologia e pela resolução de problemas. 💡🔧 Juntos, podemos criar um futuro digital incrível!",
+      image: "",
     },
-    {
-      name: "Matthew Turner",
-      desc: "Aventureiro extremo! Não há desafio grande demais para mim. Estou sempre em busca de adrenalina e emoção.",
-      username: "matt_adv",
-      image: "https://randomuser.me/api/portraits/men/4.jpg",
-      likes: 1567,
-    },
-    {
-      name: "Olivia Anderson",
-      desc: "Aventura na natureza! Meu coração pertence às montanhas e rios, onde encontro paz e serenidade.",
-      username: "olivia_nature",
-      image: "https://randomuser.me/api/portraits/women/5.jpg",
-      likes: 978,
-    },
-    {
-      name: "Emma Smith",
-      desc: "Aventura na natureza! Descubra o mundo comigo e deixe a natureza te surpreender a cada passo.",
-      username: "emma_nature",
-      image: "https://randomuser.me/api/portraits/women/6.jpg",
-      likes: 432,
-    },
-  ];
+  ]);
+
+  useEffect(() => {
+    fetchPhotos();
+  }, []);
+
+  const fetchPhotos = async () => {
+    const apiKey = "U7KfROdTkvR0sWH5PBIxIULBT5KIvoGEeyadd2kbLucDgk1tTJPNW01E";
+    const query = "programing";
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `https://api.pexels.com/v1/search?query=${query}`,
+        {
+          headers: {
+            Authorization: apiKey,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+        setPeople((prevPeople) => {
+          const updatedPeople = prevPeople.map((person, index) => {
+            return {
+              ...person,
+              image: data.photos[index].src.original,
+            };
+          });
+
+          return [...updatedPeople];
+        });
+      } else {
+        setError("Failed to load photos");
+      }
+    } catch (error) {
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <View style={styles.body}>
-      <FlatList
-        data={people}
-        keyExtractor={(item) => item.username}
-        horizontal
-        renderItem={({ item }) => (
-          <View style={styles.storieContainer}>
-            <Ionicons name="person-circle" size={65} color="white" />
-            <Text style={styles.profileName}>{item.username}</Text>
-          </View>
-        )}
-      />
-      <FlatList
-        data={people}
-        renderItem={({ item }) => <PostItem item={item} />}
-      />
-    </View>
+    <>
+      {isLoading ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "black",
+          }}
+        >
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      ) : (
+        <View style={styles.body}>
+          <FlatList
+            data={people}
+            keyExtractor={(item) => item.username}
+            horizontal
+            renderItem={({ item }) => (
+              <View style={styles.storieContainer}>
+                <Ionicons name="person-circle" size={65} color="white" />
+                <Text style={styles.profileName}>{item.username}</Text>
+              </View>
+            )}
+          />
+          <FlatList
+            data={people}
+            renderItem={({ item }) => <PostItem item={item} />}
+          />
+        </View>
+      )}
+    </>
   );
 };
 
