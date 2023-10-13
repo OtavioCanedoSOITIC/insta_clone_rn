@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     width: "100%",
-    height: 300,
+    height: 400,
   },
   postImageContainer: {
     flex: 1,
